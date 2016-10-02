@@ -56,6 +56,14 @@ daily_activity <- aggregate(steps ~ interval, y, mean)
 plot(daily_activity, type="l")
 ```
 
+The 5-minute interval containing the maximum number of steps can be found by:
+
+```{r}
+daily_activity[daily_activity$steps==max(daily_activity$steps),]
+```
+
+We see that it's the 104th interval number starting at 08:35 which has 206 steps.  
+
 ## Imputing missing values
 
 The number of missing values (coded as NA) is calculated as follows:

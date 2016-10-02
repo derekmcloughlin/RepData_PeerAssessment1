@@ -71,6 +71,20 @@ plot(daily_activity, type="l")
 
 ![](PA1_template_files/figure-html/plot-1.png)<!-- -->
 
+The 5-minute interval containing the maximum number of steps can be found by:
+
+
+```r
+daily_activity[daily_activity$steps==max(daily_activity$steps),]
+```
+
+```
+##     interval    steps
+## 104      835 206.1698
+```
+
+We see that it's the 104th interval number starting at 08:35 which has 206 steps.  
+
 ## Imputing missing values
 
 The number of missing values (coded as NA) is calculated as follows:
@@ -122,7 +136,7 @@ A histogram of the new data looks like:
 hist(new_totals_per_day)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 The mean and median of the new total number of steps per day are:
 

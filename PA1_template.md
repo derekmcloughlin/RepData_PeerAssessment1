@@ -1,17 +1,12 @@
----
-title: 'Reproducible Research: Peer Assessment 1'
-output:
-  html_document:
-    keep_md: yes
-  pdf_document: default
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
 The activity data is contained within a CSV file: 
 
-```{r echo=TRUE}
+
+```r
 x <- read.csv("activity.csv")
 ```
 
@@ -20,7 +15,8 @@ x <- read.csv("activity.csv")
 To do this we calculate the sum of the number of steps grouped by day.
 
 
-```{r echo=TRUE}
+
+```r
 # Ignore the 'NA' values in the 'steps' column.
 y <- x[!is.na(x$steps),]
 z <- aggregate(steps ~ date, y, sum)
@@ -29,15 +25,30 @@ totals_per_day <- z[,2]
 
 A histogram of this looks like:
 
-```{r echo=TRUE}
+
+```r
 hist(totals_per_day)
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
 The mean and median of the total number of steps per day are:
 
-```{r echo=TRUE}
+
+```r
 mean(totals_per_day)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(totals_per_day)
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
@@ -47,22 +58,31 @@ than do this for every single day in the dataset, we take the average for each t
 and plot that instead.
 
 
-```{r}
+
+```r
 # Group the activity by the interval and take the average number of steps
 daily_activity <- aggregate(steps ~ interval, y, mean)
 ```
 
-```{r plot}
+
+```r
 plot(daily_activity, type="l")
 ```
+
+![](PA1_template_files/figure-html/plot-1.png)<!-- -->
 
 ## Imputing missing values
 
 The number of missing values (coded as NA) is calculated as follows:
 
-```{r}
+
+```r
 missing_values <-  x[is.na(x$steps),]
 nrow(missing_values)
+```
+
+```
+## [1] 2304
 ```
 
 A simple strategy for filling in the missing values is to use the average for that time interval
@@ -73,7 +93,8 @@ we'll use this as the base for a new data set.
 We can join the missing values to the averages using the `merge` R function: the common column in
 both is `interval`:
 
-```{r message=FALSE}
+
+```r
 library(dplyr)
 z <- select(merge(missing_values, daily_activity, by.x = 'interval', by.y = 'interval'), 
             steps=steps.y, date, interval)
@@ -84,25 +105,42 @@ imputed <- z[with(z, order(date, interval)),]
 We can now use the `rbind` function to concatentate this with the `y` dataset to get a new dataset
 with all values filled:
 
-```{r}
+
+```r
 new_data_set <- rbind(y, imputed)
 ```
 
-```{r}
+
+```r
 new_totals_per_day <- aggregate(steps ~ date, new_data_set, sum)[,2]
 ```
 
 A histogram of the new data looks like:
 
-```{r echo=TRUE}
+
+```r
 hist(new_totals_per_day)
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+
 The mean and median of the new total number of steps per day are:
 
-```{r echo=TRUE}
+
+```r
 mean(new_totals_per_day)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(new_totals_per_day)
+```
+
+```
+## [1] 10766.19
 ```
 
 As you can see from the results, the mean stays the same - this is expected, but the median changes and now has the same value of the mean. The total daily number of steps has increased.
@@ -111,7 +149,8 @@ As you can see from the results, the mean stays the same - this is expected, but
 
 Let's create a new factor column in the new dataset to distinguish weekdays from weekends.
 
-```{r}
+
+```r
 weekends <- c('Saturday', 'Sunday')
 new_data_set$week_or_weekend <- factor((weekdays(as.Date(new_data_set$date)) %in% weekends), 
          levels=c(TRUE, FALSE), labels=c('weekend', 'weekday'))
@@ -120,7 +159,8 @@ new_data_set$week_or_weekend <- factor((weekdays(as.Date(new_data_set$date)) %in
 With this new column in place we can get the average number of steps taken for weekends or weekdays and 
 make a side-by-side plot for comparison:
 
-```{r plot2}
+
+```r
 weekday_daily_activity <- aggregate(steps ~ interval, 
                                     new_data_set[new_data_set$week_or_weekend=='weekday',], mean)
 weekend_daily_activity <- aggregate(steps ~ interval, 
@@ -139,6 +179,8 @@ plot(weekend_daily_activity, type="l",
      ylab="Number of steps taken",
      ylim=ylim)
 ```
+
+![](PA1_template_files/figure-html/plot2-1.png)<!-- -->
 
 From the plots we can see that there's a big difference in activity between weekdays and weekends:
 
